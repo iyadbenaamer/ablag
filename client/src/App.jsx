@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import LogoIcon from "./assets/icon.svg?react";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
+const API_BASE = "https://ablag.onrender.com";
 
 export default function App() {
   const [text, setText] = useState("");
