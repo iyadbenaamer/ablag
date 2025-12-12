@@ -3,6 +3,7 @@ import LogoIcon from "./assets/icon.svg?react";
 import axios from "axios";
 
 const API_BASE = "https://ablag.onrender.com";
+const MAX_CHARS = 5000;
 
 export default function App() {
   const [text, setText] = useState("");
@@ -26,6 +27,10 @@ export default function App() {
     const trimmed = text.trim();
     if (!trimmed) {
       setError("يرجى إدخال نص");
+      return;
+    }
+    if (trimmed.length > MAX_CHARS) {
+      setError(`الحد الأقصى للنص هو ${MAX_CHARS} حرفًا`);
       return;
     }
     setLoading(true);
@@ -68,12 +73,24 @@ export default function App() {
             rows={8}
             placeholder="أدخل النص هنا..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            maxLength={MAX_CHARS}
+            onChange={(e) => {
+              const v = e.target.value.slice(0, MAX_CHARS);
+              setText(v);
+            }}
           />
+          <div className="flex items-center justify-between text-xs text-[var(--muted)]">
+            <span>يمكنك إدخال حتى {MAX_CHARS} حرفًا</span>
+            <span
+              className={text.length >= MAX_CHARS ? "text-red-500" : undefined}
+            >
+              {text.length}/{MAX_CHARS}
+            </span>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-3 rounded-full text-white text-base cursor-pointer shadow-[var(--shadow-sm)] transition hover:shadow-[var(--shadow)] active:scale-95 bg-[var(--primary)]"
+            className="my-0 mx-auto w-fit px-4 py-3 rounded-full text-white text-base cursor-pointer shadow-[var(--shadow-sm)] transition hover:shadow-[var(--shadow)] active:scale-95 bg-[var(--primary)]"
           >
             {loading ? "جارٍ المعالجة..." : "أعد الصياغة"}
           </button>
