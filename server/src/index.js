@@ -22,9 +22,14 @@ app.get("/api/health", (req, res) => {
 
 app.post("/api/rephrase", async (req, res) => {
   try {
-    const { text } = req.body;
-    if (!text || typeof text !== "string" || text.trim().length === 0) {
+    let { text } = req.body;
+    text = text?.toString().trim();
+    if (!text || typeof text !== "string" || text.length === 0) {
       return res.status(400).json({ error: "يرجى إدخال نص عربي صالح" });
+    }
+
+    if (text.length > 5000) {
+      return res.status(400).json({ error: "الحد الأقصى للنص هو 5000 حرفًا" });
     }
 
     // Construct prompt for Arabic rephrasing and grammar improvement
