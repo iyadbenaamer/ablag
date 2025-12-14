@@ -48,7 +48,7 @@ app.post("/api/rephrase", async (req, res) => {
           { role: "user", content: userPrompt },
         ],
         temperature: 0.4,
-        max_tokens: 5000,
+        max_tokens: 2000,
       },
       {
         headers: {
