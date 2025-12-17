@@ -3,7 +3,9 @@ import LogoIcon from "./assets/icon.svg?react";
 import axios from "axios";
 
 const API_BASE = "https://ablag.onrender.com";
-const MAX_CHARS = 5000;
+const MAX_CHARS = 2000;
+
+// main function of the app
 
 export default function App() {
   const [text, setText] = useState("");
@@ -15,11 +17,13 @@ export default function App() {
   );
   const [copied, setCopied] = useState(false);
 
+  // changes the theme in localStorage
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("ablag-theme", theme);
   }, [theme]);
 
+  // handles text submition to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -64,6 +68,7 @@ export default function App() {
           أدخل نصًا بالعربية لإعادة صياغته بشكل فصيح واحترافي.
         </p>
 
+        {/* text form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 fade-up">
           <label className="text-sm text-[var(--muted)]">النص الأصلي</label>
           <textarea
@@ -75,6 +80,7 @@ export default function App() {
             value={text}
             maxLength={MAX_CHARS}
             onChange={(e) => {
+              // saving text changes only if it hasn't exceeded the limit
               const v = e.target.value.slice(0, MAX_CHARS);
               setText(v);
             }}
@@ -87,6 +93,7 @@ export default function App() {
               {text.length}/{MAX_CHARS}
             </span>
           </div>
+          {/* submit button */}
           <button
             type="submit"
             disabled={loading}
@@ -98,10 +105,12 @@ export default function App() {
 
         {error && <div className="mt-3 text-red-500">{error}</div>}
 
+        {/* result area */}
         {result && (
           <div className="mt-6 p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow)] fade-up">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg">الصياغة المُحسَّنة</h2>
+              {/* copy button */}
               <CopyButton text={result} copied={copied} setCopied={setCopied} />
             </div>
             <p className="text-lg leading-8 whitespace-pre-wrap">{result}</p>
@@ -112,6 +121,7 @@ export default function App() {
   );
 }
 
+// handles theme toggle (dark/light)
 function ThemeToggle({ theme, setTheme }) {
   const toggle = () => setTheme(theme === "light" ? "dark" : "light");
   return (
@@ -123,6 +133,7 @@ function ThemeToggle({ theme, setTheme }) {
   );
 }
 
+// handles copying the result
 function CopyButton({ text, copied, setCopied }) {
   const doCopy = async () => {
     try {
@@ -145,6 +156,7 @@ function CopyButton({ text, copied, setCopied }) {
   );
 }
 
+// icons
 function IconSun(props) {
   return (
     <svg

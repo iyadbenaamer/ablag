@@ -5,6 +5,8 @@ import axios from "axios";
 
 dotenv.config();
 
+// server's configurations
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
@@ -16,27 +18,29 @@ if (!MISTRAL_API_KEY) {
 app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "1mb" }));
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", service: "ablag-server" });
-});
-
+/*
+  rephrase endpoint where the text intended to 
+  be rephrased is proccesed by an API call to Mistral AI API
+*/
 app.post("/api/rephrase", async (req, res) => {
   try {
     let { text } = req.body;
     text = text?.toString().trim();
     if (!text || typeof text !== "string" || text.length === 0) {
-      return res.status(400).json({ error: "يرجى إدخال نص عربي صالح" });
+      return res.status(400).json({ error: "يرجى إدخال نص صالح" });
     }
 
-    if (text.length > 5000) {
-      return res.status(400).json({ error: "الحد الأقصى للنص هو 5000 حرفًا" });
+    if (text.length > 2000) {
+      return res.status(400).json({ error: "الحد الأقصى للنص هو 2000 حرف" });
     }
 
     // Construct prompt for Arabic rephrasing and grammar improvement
     const systemPrompt = `أنت مساعد لغوي عربي محترف. أعِد صياغة النص التالي بصياغة فصيحة واحترافية، صحّح الأخطاء النحوية والإملائية،
-      وحافظ على المعنى الأصلي دون إضافة معلومات جديدة. قدّم النتيجة فقط دون شرح.`;
+        وحافظ على المعنى الأصلي دون إضافة معلومات جديدة. قدّم النتيجة فقط دون شرح.`;
 
     const userPrompt = `النص الأصلي:\n${text}\n\nالنتيجة المطلوبة: إعادة صياغة فصيحة واحترافية مع تحسين الأسلوب.`;
+
+    ("النص الأصلي: راح عليا وقت الامتحان يومتها وياريت الدكتورة تخليني نعاوده مرة أخرى ،النتيجة المطلوبة: إعادة صياغة فصيحة واحترافية مع تحسين الأسلوب");
 
     // Mistral API call (chat)
     const response = await axios.post(
@@ -60,7 +64,7 @@ app.post("/api/rephrase", async (req, res) => {
     );
 
     const output = response?.data?.choices?.[0]?.message?.content || "";
-    res.json({ original: text, rephrased: output });
+    return res.json({ original: text, rephrased: output });
   } catch (err) {
     console.error("Mistral API error:", err?.response?.data || err.message);
     const status = err?.response?.status || 500;
@@ -68,6 +72,7 @@ app.post("/api/rephrase", async (req, res) => {
   }
 });
 
+// the entry point for the server
 app.listen(PORT, () => {
-  console.log(`أبلغ server running on http://localhost:${PORT}`);
+  console.log(`server running on http://localhost:${PORT}`);
 });
